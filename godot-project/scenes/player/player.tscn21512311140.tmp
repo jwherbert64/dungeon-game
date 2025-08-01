@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://b5cahr2v5lwxs" path="res://assets/images/sprites/player/idle.png" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://c1jeff31tll2c" path="res://scenes/player/player.gd" id="1_75vfm"]
 [ext_resource type="Texture2D" uid="uid://b37h27ptbs6fn" path="res://assets/images/sprites/player/running.png" id="2_g2els"]
-[ext_resource type="Script" uid="uid://c0ib15k31av4p" path="res://scripts/state_machine/state_machine.gd" id="3_qhqgy"]
+[ext_resource type="Script" uid="uid://c0ib15k31av4p" path="res://scripts/state_machine.gd" id="3_qhqgy"]
 [ext_resource type="Script" uid="uid://brcrxh2jsnvll" path="res://scenes/player/states/idle.gd" id="4_dqkch"]
 [ext_resource type="Texture2D" uid="uid://dppwjksbon070" path="res://assets/images/sprites/player/damaged.png" id="5_0owmy"]
 [ext_resource type="Script" uid="uid://bcsturdg7ncyo" path="res://scenes/player/states/damaged.gd" id="5_qek5x"]
@@ -1440,7 +1440,7 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_g2els"]
-radius = 7.0
+radius = 5.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h17s1"]
 size = Vector2(16, 9)
@@ -1488,6 +1488,8 @@ libraries = {
 &"": SubResource("AnimationLibrary_je7p5")
 }
 
+[node name="damaged_cooldown" type="Timer" parent="."]
+
 [node name="sprite_anchor" type="Node2D" parent="."]
 
 [node name="sprite" type="AnimatedSprite2D" parent="sprite_anchor"]
@@ -1496,19 +1498,18 @@ sprite_frames = SubResource("SpriteFrames_md1ol")
 animation = &"falling"
 
 [node name="hitbox" type="CollisionShape2D" parent="."]
-position = Vector2(0, -2)
+position = Vector2(0, -5)
 shape = SubResource("CircleShape2D_g2els")
 
 [node name="attacking_area" type="Area2D" parent="."]
 collision_layer = 0
-collision_mask = 5
+collision_mask = 4
 
 [node name="attacking_hitbox" type="CollisionShape2D" parent="attacking_area"]
 shape = SubResource("RectangleShape2D_h17s1")
 disabled = true
 
 [node name="falling_area" type="Area2D" parent="."]
-position = Vector2(0, -2)
 collision_layer = 0
 collision_mask = 256
 

@@ -4,19 +4,16 @@ extends Node2D
 @onready var sprite: AnimatedSprite2D = $sprite
 @onready var area: Area2D = $area
 
-signal trap_attacked(body: Node, global_position: Vector2, amount: int)
+signal trap_attacked(body: Node, damage: Damage)
 
 func _ready() -> void:
-	animation_player.play("default")
 	area.body_entered.connect(_on_area_entered)
-
-func _physics_process(delta: float) -> void:
-	pass
+	animation_player.play("default")
 
 func _on_area_entered(body: Node) -> void:
-	if body.name == "player":
-		emit_signal("trap_attacked", body, global_position, 20)
-		print("hit player")
-	
-	if body.get_parent().name == "enemies":
-		pass
+	if body.name == "player" || body.get_parent().name == "enemies":
+		if body.current_platforms.is_empty():
+			var damage = Damage.new()
+			damage.from_position = global_position
+			damage.amount = 20
+			emit_signal("trap_attacked", body, damage)

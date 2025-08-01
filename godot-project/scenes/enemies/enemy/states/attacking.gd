@@ -1,10 +1,10 @@
 extends State
-class_name PlayerAttacking
+class_name EnemyAttacking
 
 @export var enemy : CharacterBody2D
 
 func enter():
-	#print("entered player attacking")
+	#print("entered enemy attacking")
 	pass
 
 func update(_delta):

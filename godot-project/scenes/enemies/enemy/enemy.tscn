@@ -1,0 +1,80 @@
+[gd_scene load_steps=12 format=3 uid="uid://dp877c0dflmjp"]
+
+[ext_resource type="Script" uid="uid://ccqhi5lfh3g1a" path="res://scenes/enemies/enemy/enemy.gd" id="1_40wdo"]
+[ext_resource type="Script" uid="uid://c0ib15k31av4p" path="res://scripts/state_machine/state_machine.gd" id="1_a3pup"]
+[ext_resource type="Script" uid="uid://bqxirc6xxs10j" path="res://scenes/enemies/enemy/states/idle.gd" id="2_40wdo"]
+[ext_resource type="Script" uid="uid://diwgugy0e1yll" path="res://scenes/enemies/enemy/states/attacking.gd" id="4_gl05p"]
+[ext_resource type="Script" uid="uid://cj5ur4601cvg1" path="res://scenes/enemies/enemy/states/chasing.gd" id="5_cwlon"]
+[ext_resource type="Script" uid="uid://d3xdxqn4swlqd" path="res://scenes/enemies/enemy/states/damaged.gd" id="6_nbhyu"]
+[ext_resource type="Script" uid="uid://bnbg0kjrli2qy" path="res://scenes/enemies/enemy/states/died.gd" id="7_13gj6"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_dtxhd"]
+animations = []
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_so3kp"]
+radius = 5.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tjssy"]
+radius = 55.0091
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cwlon"]
+radius = 6.0
+
+[node name="enemy" type="CharacterBody2D"]
+z_index = 2
+y_sort_enabled = true
+collision_layer = 519
+collision_mask = 519
+script = ExtResource("1_40wdo")
+
+[node name="state_machine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("1_a3pup")
+initial_state = NodePath("idle")
+
+[node name="idle" type="Node" parent="state_machine"]
+script = ExtResource("2_40wdo")
+metadata/_custom_type_script = "uid://bqxirc6xxs10j"
+
+[node name="attacking" type="Node" parent="state_machine"]
+script = ExtResource("4_gl05p")
+metadata/_custom_type_script = "uid://diwgugy0e1yll"
+
+[node name="chasing" type="Node" parent="state_machine"]
+script = ExtResource("5_cwlon")
+metadata/_custom_type_script = "uid://cj5ur4601cvg1"
+
+[node name="damaged" type="Node" parent="state_machine"]
+script = ExtResource("6_nbhyu")
+metadata/_custom_type_script = "uid://d3xdxqn4swlqd"
+
+[node name="died" type="Node" parent="state_machine"]
+script = ExtResource("7_13gj6")
+metadata/_custom_type_script = "uid://bnbg0kjrli2qy"
+
+[node name="sprite_anchor" type="Node2D" parent="."]
+
+[node name="sprite" type="AnimatedSprite2D" parent="sprite_anchor"]
+position = Vector2(0, -6)
+sprite_frames = SubResource("SpriteFrames_dtxhd")
+animation = &""
+
+[node name="hitbox" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
+shape = SubResource("CircleShape2D_so3kp")
+
+[node name="chasing_area" type="Area2D" parent="."]
+position = Vector2(0, -6)
+collision_layer = 0
+collision_mask = 2
+
+[node name="chasing_hitbox" type="CollisionShape2D" parent="chasing_area"]
+position = Vector2(0, 1)
+shape = SubResource("CircleShape2D_tjssy")
+
+[node name="attacking_area" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="attacking_hitbox" type="CollisionShape2D" parent="attacking_area"]
+position = Vector2(0, -3)
+shape = SubResource("CircleShape2D_cwlon")

@@ -1,0 +1,55 @@
+[gd_scene load_steps=7 format=3 uid="uid://btbichyb6l0kp"]
+
+[ext_resource type="Script" uid="uid://b0iq3dssynrif" path="res://scenes/platform/platform.gd" id="1_8pv2r"]
+[ext_resource type="Texture2D" uid="uid://v0ver1o7fl1t" path="res://assets/images/sprites/platform.png" id="2_7j252"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7j252"]
+size = Vector2(9, 9)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_34mie"]
+size = Vector2(16, 0.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j0qm6"]
+size = Vector2(0.5, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yevkn"]
+size = Vector2(0.5, 16)
+
+[node name="platform" type="Node2D"]
+z_index = 1
+script = ExtResource("1_8pv2r")
+
+[node name="sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -8)
+texture = ExtResource("2_7j252")
+
+[node name="area" type="Area2D" parent="."]
+collision_mask = 257
+
+[node name="hitbox" type="CollisionShape2D" parent="area"]
+z_index = 1
+position = Vector2(0, -8)
+shape = SubResource("RectangleShape2D_7j252")
+
+[node name="bounding_body" type="StaticBody2D" parent="."]
+collision_layer = 4
+collision_mask = 4
+
+[node name="bounding_hitbox_top" type="CollisionShape2D" parent="bounding_body"]
+position = Vector2(0, -15.8281)
+shape = SubResource("RectangleShape2D_34mie")
+disabled = true
+
+[node name="bounding_hitbox_right" type="CollisionShape2D" parent="bounding_body"]
+position = Vector2(7.75, -8)
+shape = SubResource("RectangleShape2D_j0qm6")
+disabled = true
+
+[node name="bounding_hitbox_bottom" type="CollisionShape2D" parent="bounding_body"]
+shape = SubResource("RectangleShape2D_34mie")
+disabled = true
+
+[node name="bounding_hitbox_left" type="CollisionShape2D" parent="bounding_body"]
+position = Vector2(-7.75, -8)
+shape = SubResource("RectangleShape2D_yevkn")
+disabled = true

@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://d3kmpjpfomfwx"]
+
+[ext_resource type="Script" uid="uid://cu3kbwlwq43d" path="res://scenes/destructables/destructable/destructable.gd" id="1_m6yoq"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ibw3e"]
+animations = []
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_gpse6"]
+radius = 5.0
+
+[node name="destructable" type="Node2D"]
+z_index = 2
+y_sort_enabled = true
+script = ExtResource("1_m6yoq")
+
+[node name="sprite_anchor" type="Node2D" parent="."]
+
+[node name="sprite" type="AnimatedSprite2D" parent="sprite_anchor"]
+position = Vector2(0, -8)
+sprite_frames = SubResource("SpriteFrames_ibw3e")
+animation = &""
+
+[node name="static_body" type="StaticBody2D" parent="."]
+
+[node name="hitbox" type="CollisionShape2D" parent="static_body"]
+position = Vector2(0, -6)
+shape = SubResource("CircleShape2D_gpse6")

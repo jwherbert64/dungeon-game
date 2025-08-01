@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://d37h6vswxm8xm"]
+
+[ext_resource type="Script" uid="uid://dxoqwrm1wknkk" path="res://scenes/collectables/collectable/collectable.gd" id="1_h418v"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_udar8"]
+animations = []
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_la71a"]
+radius = 4.0
+
+[node name="collectable" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("1_h418v")
+
+[node name="sprite_anchor" type="Node2D" parent="."]
+
+[node name="sprite" type="AnimatedSprite2D" parent="sprite_anchor"]
+z_index = 2
+y_sort_enabled = true
+position = Vector2(0, -8)
+sprite_frames = SubResource("SpriteFrames_udar8")
+animation = &""
+
+[node name="area" type="Area2D" parent="."]
+position = Vector2(0, -8)
+
+[node name="hitbox" type="CollisionShape2D" parent="area"]
+position = Vector2(0, 4)
+shape = SubResource("CircleShape2D_la71a")
