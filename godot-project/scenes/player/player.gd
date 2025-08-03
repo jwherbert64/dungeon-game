@@ -21,7 +21,7 @@ var is_animation_locked := false
 var current_platforms: Array = []
 var is_on_falling_area := false
 var falling_start_velocity := Vector2.ZERO
-var falling_check_timer := Timer.new()
+var falling_entry_timer := Timer.new()
 
 func set_health(value: int) -> void:
 	health = clamp(value, 0, initial_health)
@@ -40,10 +40,10 @@ func _ready() -> void:
 	add_child(damaged_timer)
 	damaged_timer.timeout.connect(_on_damaged_timer_timeout)
 
-	falling_check_timer.wait_time = 0.05
-	falling_check_timer.one_shot = true
-	add_child(falling_check_timer)
-	falling_check_timer.timeout.connect(_on_falling_check_timer_timeout)
+	falling_entry_timer.wait_time = 0.05
+	falling_entry_timer.one_shot = true
+	add_child(falling_entry_timer)
+	falling_entry_timer.timeout.connect(_on_falling_entry_timer_timeout)
 	
 	sprite.play("idle_front")
 
@@ -102,10 +102,8 @@ func respawn() -> void:
 	velocity = Vector2.ZERO
 	state_machine.transition("idle")
 	# enable player collision
-	collision_layer |= 1
 	collision_mask  |= 1
-	collision_layer |= 2
-	collision_mask  |= 2
+	collision_mask  |= 3
 	# order player over platforms
 	z_index = 2
 	is_animation_locked = false
@@ -214,10 +212,8 @@ func start_falling() -> void:
 	falling_start_velocity = velocity
 	state_machine.transition("falling")
 	# disable player collision
-	collision_layer &= ~1
 	collision_mask  &= ~1
-	collision_layer &= ~2
-	collision_mask  &= ~2
+	collision_mask  &= ~3
 	# order player under platforms
 	z_index = 0
 	is_animation_locked = true
@@ -227,22 +223,20 @@ func start_falling() -> void:
 		sprite.animation_finished.connect(_on_falling_animation_finished)
 
 func _on_position_area_body_entered(body: Node) -> void:
-	print("water entered")
 	if body.name == "water_tile_map":
 		is_on_falling_area = true
 		
 		# Instead of checking immediately, wait 0.1s to ensure platform areas are registered
-		if not falling_check_timer.is_stopped():
-			falling_check_timer.stop()
+		if not falling_entry_timer.is_stopped():
+			falling_entry_timer.stop()
 			
-		falling_check_timer.start()
+		falling_entry_timer.start()
 
 func _on_position_area_body_exited(body: Node) -> void:
-	print("water exited")
 	if body.name == "water_tile_map":
 		is_on_falling_area = false
 
-func _on_falling_check_timer_timeout():
+func _on_falling_entry_timer_timeout():
 	if is_on_falling_area and current_platforms.is_empty():
 		start_falling()
 

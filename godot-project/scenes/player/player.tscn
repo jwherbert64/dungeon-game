@@ -1451,8 +1451,8 @@ radius = 1.0
 [node name="player" type="CharacterBody2D"]
 z_index = 2
 y_sort_enabled = true
-collision_layer = 3
-collision_mask = 3
+collision_layer = 2
+collision_mask = 5
 script = ExtResource("1_75vfm")
 
 [node name="state_machine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
@@ -1509,7 +1509,7 @@ disabled = true
 
 [node name="position_area" type="Area2D" parent="."]
 collision_layer = 512
-collision_mask = 256
+collision_mask = 1024
 
 [node name="position_hitbox" type="CollisionShape2D" parent="position_area"]
 position = Vector2(0, -1)

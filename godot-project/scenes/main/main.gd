@@ -106,3 +106,14 @@ func _on_trap_attacked(body: Node, damage: Damage) -> void:
 func _on_platform_exited(body: Node):
 	if body.current_platforms.is_empty() && body.is_on_falling_area:
 		body.start_falling()
+
+#Project notes:
+	#Layers/Masks:
+		#Static:
+			#1: walls
+			#2: player
+			#3: enemies
+		#Dynamic:
+			#9: water, enemy hitbox
+			#10: platforms, traps, player position, enemy position
+			#11: water, platforms, player position, enemy position

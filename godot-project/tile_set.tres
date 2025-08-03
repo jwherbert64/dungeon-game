@@ -1446,8 +1446,9 @@ texture = ExtResource("6_06xp3")
 
 [resource]
 physics_layer_0/collision_layer = 1
-physics_layer_1/collision_layer = 256
-physics_layer_1/collision_mask = 256
+physics_layer_0/collision_mask = 0
+physics_layer_1/collision_layer = 1280
+physics_layer_1/collision_mask = 0
 terrain_set_0/mode = 0
 terrain_set_0/terrain_0/name = "floor_1_bottomless"
 terrain_set_0/terrain_0/color = Color(1, 1, 1, 1)

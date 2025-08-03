@@ -1,6 +1,5 @@
 extends Enemy
 
-
 var drop_enabled := false
 
 func _ready():

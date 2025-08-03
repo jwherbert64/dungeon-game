@@ -21,6 +21,7 @@ position = Vector2(161, 92)
 position_smoothing_enabled = true
 
 [node name="canvas" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="health_bar" type="TextureProgressBar" parent="canvas"]
 offset_left = 16.0
@@ -49,12 +50,12 @@ tile_map_data = PackedByteArray("AAATAAwAAwABAAEAAAATAAsAAwABAAEAAAATAAoAAwABAAE
 tile_set = ExtResource("2_l3cfh")
 
 [node name="player" parent="." instance=ExtResource("3_6q06x")]
-position = Vector2(24, 120)
+position = Vector2(40, 200)
 
 [node name="enemies" type="Node2D" parent="."]
 y_sort_enabled = true
 
-[node name="slime_enemy_1" parent="enemies" instance=ExtResource("7_ouso4")]
+[node name="slime_enemy" parent="enemies" instance=ExtResource("7_ouso4")]
 position = Vector2(24, 152)
 
 [node name="traps" type="Node2D" parent="."]
@@ -74,16 +75,36 @@ position = Vector2(112, 120)
 [node name="platforms" type="Node2D" parent="."]
 
 [node name="platform_1" parent="platforms" instance=ExtResource("6_ow5a4")]
-position = Vector2(96, 88)
-travel_distance = 40.0
+position = Vector2(112, 88)
+travel_distance = 0.0
 
 [node name="platform_3" parent="platforms" instance=ExtResource("6_ow5a4")]
-position = Vector2(104, 176)
+position = Vector2(40, 176)
+direction = "left"
+travel_distance = 0.0
+
+[node name="platform_8" parent="platforms" instance=ExtResource("6_ow5a4")]
+position = Vector2(40, 144)
+direction = "left"
+travel_distance = 0.0
+
+[node name="platform_5" parent="platforms" instance=ExtResource("6_ow5a4")]
+position = Vector2(72, 176)
+direction = "left"
+travel_distance = 0.0
+
+[node name="platform_6" parent="platforms" instance=ExtResource("6_ow5a4")]
+position = Vector2(56, 176)
+direction = "left"
+travel_distance = 0.0
+
+[node name="platform_7" parent="platforms" instance=ExtResource("6_ow5a4")]
+position = Vector2(56, 144)
 direction = "left"
 travel_distance = 0.0
 
 [node name="platform_4" parent="platforms" instance=ExtResource("6_ow5a4")]
-position = Vector2(16, 160)
+position = Vector2(40, 160)
 travel_distance = 60.0
 
 [node name="destructables" type="Node2D" parent="."]

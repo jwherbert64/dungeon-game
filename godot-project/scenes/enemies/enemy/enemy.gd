@@ -8,6 +8,8 @@ const NodeUtils = preload("res://scripts/utils/node_utils.gd")
 @onready var stop_chasing_area: Area2D = $stop_chasing_area
 @onready var attacking_area: Area2D = $attacking_area
 @onready var collectable_drop: Node = $collectable_drop
+@onready var hitbox: CollisionShape2D = $hitbox
+@onready var position_area: Area2D = $position_area
 
 signal enemy_attacked(damage: Damage)
 
@@ -87,14 +89,47 @@ func play_anim(base_name: String) -> void:
 	else:
 		sprite.play(base_name)
 
+func is_safe_destination(position: Vector2) -> bool:
+	var space_state = get_world_2d().direct_space_state
+	var collision_shape_node = position_area.get_node("position_hitbox")
+	var shape = collision_shape_node.shape
+	var transform = position_area.get_global_transform()
+	transform.origin = position
 
+	# Check water (TileMap body on layer 10)
+	var water_params = PhysicsShapeQueryParameters2D.new()
+	water_params.shape = shape
+	water_params.transform = transform
+	water_params.collide_with_bodies = true
+	water_params.collide_with_areas = false
+	water_params.collision_mask = 1 << 10  # Water layer
+	var water_hits = space_state.intersect_shape(water_params)
+
+	# Check platform (Area2D on layer 10)
+	var platform_params = PhysicsShapeQueryParameters2D.new()
+	platform_params.shape = shape
+	platform_params.transform = transform
+	platform_params.collide_with_bodies = false
+	platform_params.collide_with_areas = true
+	platform_params.collision_mask = 1 << 10  # Platform layer
+	var platform_hits = space_state.intersect_shape(platform_params)
+
+	if water_hits.size() > 0 and platform_hits.size() == 0:
+		return false
+
+	return true
 
 func _physics_process(delta: float) -> void:
 	if state_machine.current_state.name in ["damaged", "died"]:
+		var target_position = global_position + velocity * delta
+		
+		if current_platforms.size() > 0 and not is_safe_destination(target_position):
+			velocity = Vector2.ZERO  # Cancel knockback if it would push into water
+			
 		velocity = velocity.move_toward(Vector2.ZERO, 1200 * delta)  # smooth deceleration
 		move_and_slide()
 		return
-	
+		
 	# Determine current state based on area status
 	if is_in_attacking_range:
 		state_machine.transition("attacking")
@@ -102,7 +137,7 @@ func _physics_process(delta: float) -> void:
 		state_machine.transition("chasing")
 	else:
 		state_machine.transition("idle")
-
+		
 	match state_machine.current_state.name:
 		"idle":
 			var direction = (idle_target_position - global_position)
@@ -123,7 +158,7 @@ func _physics_process(delta: float) -> void:
 					
 				if not attacking_on_cooldown:
 					attacking_on_cooldown = true
-
+					
 					if has_attacking_anim:
 						is_attacking_animation_playing = true
 						play_anim("attacking")
@@ -146,6 +181,11 @@ func _physics_process(delta: float) -> void:
 				velocity = -to_player.normalized() * 40
 			else:
 				velocity = Vector2.ZERO
+		
+	var target_position = global_position + velocity * delta
+	
+	if current_platforms.size() > 0 and not is_safe_destination(target_position):
+		velocity = Vector2.ZERO  # Prevent moving off platform into water
 		
 	move_and_slide()
 	

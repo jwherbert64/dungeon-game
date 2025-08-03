@@ -1,14 +1,11 @@
 extends Node2D
 
+@onready var area: Area2D = $area
+signal platform_exited(body: Node)
+
 @export_enum("up", "down", "left", "right") var direction: String = "right"
 @export var travel_distance: float = 100.0
 @export var move_speed: float = 40.0
-
-@onready var area: Area2D = $area
-@onready var bounding_body: StaticBody2D = $bounding_body
-
-signal platform_exited(body: Node)
-
 var point_a: Vector2
 var point_b: Vector2
 var moving_to_b := true
@@ -65,60 +62,37 @@ func get_direction_vector() -> Vector2:
 		_:
 			return Vector2.ZERO
 
-#func _on_area_body_entered(body: Node) -> void:
-	#if body.get_parent().name == "enemies":
-		## disable enemy colliding with water_tile_map
-		#await get_tree().process_frame  # avoid collision loop
-		#const collision_layer := 1 << 10
-		#body.collision_layer &= ~collision_layer
-		#body.collision_mask &= ~collision_layer
-		#
-	#if body.name == "water_tile_map":
-		#for hitbox in bounding_body.get_children():
-			#
-			#hitbox.set_deferred("disabled", false)
-#
-#func _on_area_body_exited(body: Node) -> void:
-	#if body.get_parent().name == "enemies":
-		## enable enemy colliding with water_tile_map
-		#await get_tree().process_frame
-		#const collision_layer := 1 << 10
-		#body.collision_layer |= collision_layer
-		#body.collision_mask |= collision_layer
-	#
-	#if body.name == "water_tile_map":
-		#for hitbox in bounding_body.get_children():
-			#hitbox.set_deferred("disabled", true)
-
 func _on_area_area_entered(area: Area2D) -> void:
-	print("platform entered")
 	var parent = area.get_parent()
 	
 	if parent.name == "player" or parent.is_in_group("enemies"):
+		parent.current_platforms.append(self)
 		overlapping_bodies.append(parent)
-		if not parent.current_platforms.has(self):
-			parent.current_platforms.append(self)
-	
+			
 	if parent.is_in_group("enemies"):
-		pass
 		# disable enemy colliding with water_tile_map
 		await get_tree().process_frame  # avoid collision loop
 		const collision_layer := 1 << 8
 		parent.collision_layer &= ~collision_layer
+		parent.collision_mask  &= ~collision_layer
 
 func _on_area_area_exited(area: Area2D) -> void:
 	var parent = area.get_parent()
 	
-	if parent.name == "player" or parent.is_in_group("enemies"):
-		print("platform exited (delayed)")
+	if parent.name == "player":
 		exiting_body = parent
 		platform_exit_timer.start()
-	
+		
 	if parent.is_in_group("enemies"):
+		parent.current_platforms.erase(self)
+		overlapping_bodies.erase(parent)
+	
+	if parent.is_in_group("enemies") and parent.current_platforms.size() == 0:
 		# enable enemy colliding with water_tile_map
 		await get_tree().process_frame
 		const collision_layer := 1 << 8
 		parent.collision_layer |= collision_layer
+		parent.collision_mask |= collision_layer
 
 func _on_platform_exit_timer_timeout() -> void:
 	if exiting_body and exiting_body.is_inside_tree():
@@ -127,5 +101,5 @@ func _on_platform_exit_timer_timeout() -> void:
 		
 	if exiting_body.name == "player":
 		emit_signal("platform_exited", exiting_body)
-	
+		
 	exiting_body = null

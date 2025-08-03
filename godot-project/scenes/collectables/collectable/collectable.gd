@@ -7,7 +7,6 @@ class_name Collectable
 signal collected(body: Node)
 
 func _ready() -> void:
-	print("collectable ready")
 	area.body_entered.connect(_on_area_entered)
 	sprite.play("default")
 

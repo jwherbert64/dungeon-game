@@ -173,6 +173,7 @@ animations = [{
 }]
 
 [node name="slime_enemy" instance=ExtResource("1_hdbha")]
+collision_layer = 4
 script = ExtResource("2_25avl")
 
 [node name="sprite" parent="sprite_anchor" index="0"]
@@ -180,5 +181,5 @@ position = Vector2(0, -6)
 sprite_frames = SubResource("SpriteFrames_7bg7i")
 animation = &"died"
 
-[node name="collectable_drop" type="Node" parent="." index="5"]
+[node name="collectable_drop" type="Node" parent="position_area" index="1"]
 script = ExtResource("6_fne3n")
