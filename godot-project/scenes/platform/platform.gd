@@ -14,10 +14,21 @@ var point_b: Vector2
 var moving_to_b := true
 var last_position: Vector2
 var overlapping_bodies: Array = []
+var platform_exit_timer := Timer.new()
+var exiting_body: Node = null
 
 func _ready() -> void:
-	area.body_entered.connect(_on_area_entered)
-	area.body_exited.connect(_on_area_exited)
+	add_to_group("platforms")
+	
+	#area.body_entered.connect(_on_area_body_entered)
+	#area.body_exited.connect(_on_area_body_exited)
+	area.area_entered.connect(_on_area_area_entered)
+	area.area_exited.connect(_on_area_area_exited)
+	
+	add_child(platform_exit_timer)
+	platform_exit_timer.wait_time = 0.05
+	platform_exit_timer.one_shot = true
+	platform_exit_timer.timeout.connect(_on_platform_exit_timer_timeout)
 	
 	point_a = global_position
 	point_b = point_a + get_direction_vector() * travel_distance
@@ -54,41 +65,67 @@ func get_direction_vector() -> Vector2:
 		_:
 			return Vector2.ZERO
 
-func _on_area_entered(body: Node) -> void:
-	if body.name == "player" || body.get_parent().name == "enemies":
-		print("hit entered platform")
-		overlapping_bodies.append(body)
-		if not body.current_platforms.has(self):
-			body.current_platforms.append(self)
+#func _on_area_body_entered(body: Node) -> void:
+	#if body.get_parent().name == "enemies":
+		## disable enemy colliding with water_tile_map
+		#await get_tree().process_frame  # avoid collision loop
+		#const collision_layer := 1 << 10
+		#body.collision_layer &= ~collision_layer
+		#body.collision_mask &= ~collision_layer
+		#
+	#if body.name == "water_tile_map":
+		#for hitbox in bounding_body.get_children():
+			#
+			#hitbox.set_deferred("disabled", false)
+#
+#func _on_area_body_exited(body: Node) -> void:
+	#if body.get_parent().name == "enemies":
+		## enable enemy colliding with water_tile_map
+		#await get_tree().process_frame
+		#const collision_layer := 1 << 10
+		#body.collision_layer |= collision_layer
+		#body.collision_mask |= collision_layer
+	#
+	#if body.name == "water_tile_map":
+		#for hitbox in bounding_body.get_children():
+			#hitbox.set_deferred("disabled", true)
+
+func _on_area_area_entered(area: Area2D) -> void:
+	print("platform entered")
+	var parent = area.get_parent()
 	
-	if body.get_parent().name == "enemies":
+	if parent.name == "player" or parent.is_in_group("enemies"):
+		overlapping_bodies.append(parent)
+		if not parent.current_platforms.has(self):
+			parent.current_platforms.append(self)
+	
+	if parent.is_in_group("enemies"):
+		pass
 		# disable enemy colliding with water_tile_map
 		await get_tree().process_frame  # avoid collision loop
-		const collision_layer := 1 << 9
-		body.collision_layer &= ~collision_layer
-		body.collision_mask &= ~collision_layer
-		
-	if body.name == "water_tile_map":
-		for hitbox in bounding_body.get_children():
-			
-			hitbox.set_deferred("disabled", false)
+		const collision_layer := 1 << 8
+		parent.collision_layer &= ~collision_layer
 
-func _on_area_exited(body: Node) -> void:
-	if body.name == "player" || body.get_parent().name == "enemies":
-		print("hit exited platform")
-		overlapping_bodies.erase(body)
-		body.current_platforms.erase(self)
+func _on_area_area_exited(area: Area2D) -> void:
+	var parent = area.get_parent()
 	
-	if body.name == "player":
-		emit_signal("platform_exited", body)
+	if parent.name == "player" or parent.is_in_group("enemies"):
+		print("platform exited (delayed)")
+		exiting_body = parent
+		platform_exit_timer.start()
 	
-	if body.get_parent().name == "enemies":
+	if parent.is_in_group("enemies"):
 		# enable enemy colliding with water_tile_map
 		await get_tree().process_frame
-		const collision_layer := 1 << 9
-		body.collision_layer |= collision_layer
-		body.collision_mask |= collision_layer
+		const collision_layer := 1 << 8
+		parent.collision_layer |= collision_layer
+
+func _on_platform_exit_timer_timeout() -> void:
+	if exiting_body and exiting_body.is_inside_tree():
+		exiting_body.current_platforms.erase(self)
+		overlapping_bodies.erase(exiting_body)
+		
+	if exiting_body.name == "player":
+		emit_signal("platform_exited", exiting_body)
 	
-	if body.name == "water_tile_map":
-		for hitbox in bounding_body.get_children():
-			hitbox.set_deferred("disabled", true)
+	exiting_body = null

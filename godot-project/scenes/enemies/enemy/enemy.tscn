@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dp877c0dflmjp"]
+[gd_scene load_steps=14 format=3 uid="uid://dp877c0dflmjp"]
 
 [ext_resource type="Script" uid="uid://ccqhi5lfh3g1a" path="res://scenes/enemies/enemy/enemy.gd" id="1_40wdo"]
 [ext_resource type="Script" uid="uid://c0ib15k31av4p" path="res://scripts/state_machine/state_machine.gd" id="1_a3pup"]
@@ -17,14 +17,20 @@ radius = 5.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_tjssy"]
 radius = 55.0091
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_wbf86"]
+radius = 55.0364
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_cwlon"]
-radius = 6.0
+radius = 13.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_b6002"]
+radius = 1.0
 
 [node name="enemy" type="CharacterBody2D"]
 z_index = 2
 y_sort_enabled = true
-collision_layer = 519
-collision_mask = 519
+collision_layer = 263
+collision_mask = 263
 script = ExtResource("1_40wdo")
 
 [node name="state_machine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
@@ -54,7 +60,6 @@ metadata/_custom_type_script = "uid://bnbg0kjrli2qy"
 [node name="sprite_anchor" type="Node2D" parent="."]
 
 [node name="sprite" type="AnimatedSprite2D" parent="sprite_anchor"]
-position = Vector2(0, -6)
 sprite_frames = SubResource("SpriteFrames_dtxhd")
 animation = &""
 
@@ -63,13 +68,18 @@ position = Vector2(0, -3)
 shape = SubResource("CircleShape2D_so3kp")
 
 [node name="chasing_area" type="Area2D" parent="."]
-position = Vector2(0, -6)
 collision_layer = 0
 collision_mask = 2
 
 [node name="chasing_hitbox" type="CollisionShape2D" parent="chasing_area"]
-position = Vector2(0, 1)
 shape = SubResource("CircleShape2D_tjssy")
+
+[node name="stop_chasing_area" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="stop_chasing_hitbox" type="CollisionShape2D" parent="stop_chasing_area"]
+shape = SubResource("CircleShape2D_wbf86")
 
 [node name="attacking_area" type="Area2D" parent="."]
 collision_layer = 0
@@ -78,3 +88,11 @@ collision_mask = 2
 [node name="attacking_hitbox" type="CollisionShape2D" parent="attacking_area"]
 position = Vector2(0, -3)
 shape = SubResource("CircleShape2D_cwlon")
+
+[node name="position_area" type="Area2D" parent="."]
+collision_layer = 512
+collision_mask = 0
+
+[node name="position_hitbox" type="CollisionShape2D" parent="position_area"]
+position = Vector2(0, -1)
+shape = SubResource("CircleShape2D_b6002")

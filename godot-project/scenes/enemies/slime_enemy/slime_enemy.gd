@@ -1,8 +1,13 @@
 extends Enemy
 
-var drop_enabled: bool = false
+
+var drop_enabled := false
 
 func _ready():
+	initial_health = 60
+	health = initial_health
+	damage_amount = 20
+	
 	# Decide before base class logic runs
 	if has_node("collectable_drop"):
 		if randf() < 1.0:

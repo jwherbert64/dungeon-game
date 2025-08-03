@@ -6,14 +6,13 @@ extends CharacterBody2D
 @onready var sprite: AnimatedSprite2D = $sprite_anchor/sprite
 @onready var animation_player: AnimationPlayer = $animation_player
 @onready var attacking_area: Area2D = $attacking_area
-@onready var falling_area: Area2D = $falling_area
+@onready var position_area: Area2D = $position_area
 
 signal player_attacked(body: Node, damage: Damage)
 signal health_changed(new_health: int)
 
 var spawn_position := Vector2.ZERO
 var last_direction := "front"
-var last_hit_direction := "front"
 var initial_health := 100
 var health := initial_health : set = set_health
 var damaged_timer := Timer.new()
@@ -22,6 +21,7 @@ var is_animation_locked := false
 var current_platforms: Array = []
 var is_on_falling_area := false
 var falling_start_velocity := Vector2.ZERO
+var falling_check_timer := Timer.new()
 
 func set_health(value: int) -> void:
 	health = clamp(value, 0, initial_health)
@@ -30,13 +30,21 @@ func set_health(value: int) -> void:
 func _ready() -> void:
 	spawn_position = global_position
 	animation_player.animation_finished.connect(_on_attacking_animation_finished)
+	position_area.body_entered.connect(_on_position_area_body_entered)
+	position_area.body_exited.connect(_on_position_area_body_exited)
+	
 	attacking_area.body_entered.connect(_on_attacking_area_entered)
+	
 	damaged_timer.wait_time = 0.5
 	damaged_timer.one_shot = true
 	add_child(damaged_timer)
 	damaged_timer.timeout.connect(_on_damaged_timer_timeout)
-	falling_area.body_entered.connect(_on_falling_area_body_entered)
-	falling_area.body_exited.connect(_on_falling_area_body_exited)
+
+	falling_check_timer.wait_time = 0.05
+	falling_check_timer.one_shot = true
+	add_child(falling_check_timer)
+	falling_check_timer.timeout.connect(_on_falling_check_timer_timeout)
+	
 	sprite.play("idle_front")
 
 func _physics_process(delta: float) -> void:
@@ -218,15 +226,25 @@ func start_falling() -> void:
 	if not sprite.animation_finished.is_connected(_on_falling_animation_finished):
 		sprite.animation_finished.connect(_on_falling_animation_finished)
 
-func _on_falling_area_body_entered(_body: Node) -> void:
-	print("hit enter falling_area")
-	is_on_falling_area = true
-	
-	if current_platforms.is_empty():
-		start_falling()
+func _on_position_area_body_entered(body: Node) -> void:
+	print("water entered")
+	if body.name == "water_tile_map":
+		is_on_falling_area = true
+		
+		# Instead of checking immediately, wait 0.1s to ensure platform areas are registered
+		if not falling_check_timer.is_stopped():
+			falling_check_timer.stop()
+			
+		falling_check_timer.start()
 
-func _on_falling_area_body_exited(_body: Node) -> void:
-	is_on_falling_area = false
+func _on_position_area_body_exited(body: Node) -> void:
+	print("water exited")
+	if body.name == "water_tile_map":
+		is_on_falling_area = false
+
+func _on_falling_check_timer_timeout():
+	if is_on_falling_area and current_platforms.is_empty():
+		start_falling()
 
 func _on_falling_animation_finished() -> void:
 	if sprite.animation_finished.is_connected(_on_falling_animation_finished):

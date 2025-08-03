@@ -1440,7 +1440,7 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_g2els"]
-radius = 7.0
+radius = 4.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h17s1"]
 size = Vector2(16, 9)
@@ -1493,7 +1493,7 @@ libraries = {
 [node name="sprite" type="AnimatedSprite2D" parent="sprite_anchor"]
 position = Vector2(0, -8)
 sprite_frames = SubResource("SpriteFrames_md1ol")
-animation = &"falling"
+animation = &"idle_front"
 
 [node name="hitbox" type="CollisionShape2D" parent="."]
 position = Vector2(0, -2)
@@ -1507,10 +1507,10 @@ collision_mask = 5
 shape = SubResource("RectangleShape2D_h17s1")
 disabled = true
 
-[node name="falling_area" type="Area2D" parent="."]
-position = Vector2(0, -2)
-collision_layer = 0
+[node name="position_area" type="Area2D" parent="."]
+collision_layer = 512
 collision_mask = 256
 
-[node name="falling_hitbox" type="CollisionShape2D" parent="falling_area"]
+[node name="position_hitbox" type="CollisionShape2D" parent="position_area"]
+position = Vector2(0, -1)
 shape = SubResource("CircleShape2D_fm80t")
